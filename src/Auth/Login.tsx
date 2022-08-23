@@ -39,13 +39,7 @@ const Login: FC = () => {
         <Text style={styles.title} variant="headlineMedium">
           Your Phone!
         </Text>
-        <RnPhoneInput
-          control={control}
-          phoneInputRef={phoneInputRef}
-          rules={{
-            required: 'Phone number is required',
-          }}
-        />
+        <RnPhoneInput control={control} phoneInputRef={phoneInputRef} />
         <Text style={styles.otpText} variant="labelMedium">
           A 4 digit otp number will be automatically sent to your phone
         </Text>

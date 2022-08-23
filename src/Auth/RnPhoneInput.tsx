@@ -5,43 +5,35 @@ import {Control, Controller} from 'react-hook-form';
 
 export interface RnPhoneInputProps {
   control?: Control;
-  rules: {};
   phoneInputRef: LegacyRef<PhoneInput> | undefined;
 }
 
-const RnPhoneInput: FC<RnPhoneInputProps> = ({
-  control,
-  rules = {},
-  phoneInputRef,
-}) => {
+const RnPhoneInput: FC<RnPhoneInputProps> = ({control, phoneInputRef}) => {
   return (
     <Controller
       name="mobile"
       control={control}
       defaultValue=""
-      rules={rules}
       render={({field: {value, onChange}, fieldState: {error}}) => (
-        <>
-          <View style={styles.container}>
-            <PhoneInput
-              ref={phoneInputRef}
-              value={value}
-              defaultCode="AU"
-              layout="first"
-              onChangeText={onChange}
-              countryPickerProps={{
-                countryCodes: ['AU', 'SO'],
-                rules: {
-                  required: 'Phone number is required',
-                },
-              }}
-              withDarkTheme
-              withShadow
-              autoFocus
-            />
-            {error && <Text style={styles.errorMessage}>{error.message}</Text>}
-          </View>
-        </>
+        <View style={styles.container}>
+          <PhoneInput
+            ref={phoneInputRef}
+            value={value}
+            defaultCode="AU"
+            layout="first"
+            onChangeText={onChange}
+            countryPickerProps={{
+              countryCodes: ['AU', 'SO'],
+              rules: {
+                required: 'Phone number is required',
+              },
+            }}
+            withDarkTheme
+            withShadow
+            autoFocus
+          />
+          {error && <Text style={styles.errorMessage}>{error.message}</Text>}
+        </View>
       )}
     />
   );
