@@ -1,10 +1,34 @@
-import React from 'react';
+import React, {FC, useRef} from 'react';
 import {Platform, StyleSheet} from 'react-native';
 import {Button, Card, Text} from 'react-native-paper';
-import RnPhoneInput, {IPhoneInputRef} from './RnPhoneInput';
+import RnPhoneInput from './RnPhoneInput';
+import {SubmitHandler, useForm, Resolver, FieldValues} from 'react-hook-form';
+import PhoneInput from 'react-native-phone-number-input';
 
-const Login = () => {
-  const phoneInputRef = React.useRef<IPhoneInputRef>();
+const resolver: Resolver<FieldValues> = async values => {
+  return {
+    values: values.mobile ? values : '',
+    errors: !values.mobile
+      ? {
+          mobile: {
+            type: 'required',
+            message: 'Phone number is required!',
+          },
+        }
+      : {},
+  };
+};
+
+const Login: FC = () => {
+  const {control, handleSubmit, setError} = useForm<FieldValues>({
+    resolver,
+  });
+  const phoneInputRef = useRef<PhoneInput>(null);
+
+  const onClickSubmit: SubmitHandler<FieldValues> = data => {
+    !phoneInputRef?.current?.isValidNumber(data.mobile) &&
+      setError('mobile', {type: 'manual', message: 'Invalid phone number'});
+  };
 
   return (
     <>
@@ -15,21 +39,20 @@ const Login = () => {
         <Text style={styles.title} variant="headlineMedium">
           Your Phone!
         </Text>
-        <RnPhoneInput phoneInputRef={phoneInputRef} />
+        <RnPhoneInput
+          control={control}
+          phoneInputRef={phoneInputRef}
+          rules={{
+            required: 'Phone number is required',
+          }}
+        />
         <Text style={styles.otpText} variant="labelMedium">
           A 4 digit otp number will be automatically sent to your phone
         </Text>
         <Button
           mode={'contained'}
           style={styles.button}
-          onPress={() => {
-            console.log(
-              'phoneInputRef',
-              phoneInputRef.current?.isValidNumber(
-                `${phoneInputRef.current?.getCountryCode()}${'422673013'}`,
-              ),
-            );
-          }}>
+          onPress={handleSubmit(onClickSubmit)}>
           OK
         </Button>
       </Card>
