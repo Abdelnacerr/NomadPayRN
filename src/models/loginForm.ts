@@ -1,3 +1,3 @@
-export interface ILoginFomFields {
+export interface ILoginFormFields {
   mobile: string;
 }

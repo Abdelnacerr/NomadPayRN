@@ -1,9 +1,10 @@
-import React, {FC, useRef} from 'react';
-import {Platform, StyleSheet} from 'react-native';
+import React, {FC, useCallback, useRef, useState} from 'react';
+import {Platform, ScrollView, StyleSheet} from 'react-native';
 import {Button, Card, Text} from 'react-native-paper';
 import RnPhoneInput from './RnPhoneInput';
 import {SubmitHandler, useForm, Resolver, FieldValues} from 'react-hook-form';
 import PhoneInput from 'react-native-phone-number-input';
+import {useLoginMutation} from '../../RTK/services/login';
 
 const resolver: Resolver<FieldValues> = async values => {
   return {
@@ -20,18 +21,29 @@ const resolver: Resolver<FieldValues> = async values => {
 };
 
 const Login: FC = () => {
+  const [login] = useLoginMutation();
+  const [token, setToken] = useState<string>('');
+  const phoneInputRef = useRef<PhoneInput>(null);
+
   const {control, handleSubmit, setError} = useForm<FieldValues>({
     resolver,
   });
-  const phoneInputRef = useRef<PhoneInput>(null);
 
   const onClickSubmit: SubmitHandler<FieldValues> = data => {
     !phoneInputRef?.current?.isValidNumber(data.mobile) &&
       setError('mobile', {type: 'manual', message: 'Invalid phone number'});
+    const mobile =
+      phoneInputRef?.current?.getNumberAfterPossiblyEliminatingZero();
+
+    login(mobile?.formattedNumber || '')
+      .unwrap()
+      .then(res => setToken(res.jwt));
   };
 
   return (
-    <>
+    <ScrollView
+      keyboardShouldPersistTaps="never"
+      contentContainerStyle={{flexGrow: 1}}>
       <Text variant="displayLarge" style={styles.textView}>
         Welcome
       </Text>
@@ -50,7 +62,7 @@ const Login: FC = () => {
           OK
         </Button>
       </Card>
-    </>
+    </ScrollView>
   );
 };
 export default Login;
