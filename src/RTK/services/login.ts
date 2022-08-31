@@ -6,6 +6,10 @@ export const loginApiSlice = createApi({
   reducerPath: 'loginApi',
   baseQuery: fetchBaseQuery({
     baseUrl: apiEndPoint,
+    prepareHeaders: headers => {
+      headers.set('Content-Type', 'application/json');
+      return headers;
+    },
   }),
   tagTypes: ['login'],
   endpoints: builder => ({

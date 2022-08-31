@@ -1,10 +1,14 @@
-import React, {FC, useCallback, useRef, useState} from 'react';
+import React, {FC, useRef} from 'react';
 import {Platform, ScrollView, StyleSheet} from 'react-native';
 import {Button, Card, Text} from 'react-native-paper';
 import RnPhoneInput from './RnPhoneInput';
 import {SubmitHandler, useForm, Resolver, FieldValues} from 'react-hook-form';
 import PhoneInput from 'react-native-phone-number-input';
 import {useLoginMutation} from '../../RTK/services/login';
+import {RootStackNavProps} from '../../models/rootStackParamList';
+import {setisLoggedInAsync} from '../../RTK/slices/loginSlice';
+import {useAppDispatch} from '../../RTK/store/reduxHooks';
+import {setTokenAsync} from '../../RTK/slices/tokenSlice';
 
 const resolver: Resolver<FieldValues> = async values => {
   return {
@@ -19,12 +23,13 @@ const resolver: Resolver<FieldValues> = async values => {
       : {},
   };
 };
+interface LoginProps {}
+type Props = RootStackNavProps<'Login'> & LoginProps;
 
-const Login: FC = () => {
+const Login: FC<Props> = ({navigation}): JSX.Element => {
   const [login] = useLoginMutation();
-  const [token, setToken] = useState<string>('');
   const phoneInputRef = useRef<PhoneInput>(null);
-
+  const dispatch = useAppDispatch();
   const {control, handleSubmit, setError} = useForm<FieldValues>({
     resolver,
   });
@@ -37,13 +42,17 @@ const Login: FC = () => {
 
     login(mobile?.formattedNumber || '')
       .unwrap()
-      .then(res => setToken(res.jwt));
+      .then(res => {
+        dispatch(setTokenAsync(res.jwt));
+      });
+    dispatch(setisLoggedInAsync(true));
+    navigation.navigate('HomeScreen');
   };
 
   return (
     <ScrollView
       keyboardShouldPersistTaps="never"
-      contentContainerStyle={{flexGrow: 1}}>
+      contentContainerStyle={{flexGrow: 1, backgroundColor: '#F5FFFA'}}>
       <Text variant="displayLarge" style={styles.textView}>
         Welcome
       </Text>

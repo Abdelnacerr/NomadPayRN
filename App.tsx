@@ -1,16 +1,19 @@
+import 'react-native-gesture-handler';
 import React from 'react';
 import {SafeAreaView, StatusBar, StyleSheet} from 'react-native';
 import {Provider} from 'react-redux';
-import {store} from './src/RTK/store/store';
-import Login from './src/screens/Auth/Login';
+import {PersistGate} from 'redux-persist/integration/react';
+import {persistor, store} from './src/RTK/store/store';
+import RootStack from './src/routes/RootStack';
 
 const App = () => {
   return (
     <Provider store={store}>
-      <SafeAreaView style={styles.safeArea}>
-        <StatusBar backgroundColor={'#F5FFFA'} barStyle={'dark-content'} />
-        <Login />
-      </SafeAreaView>
+      <PersistGate loading={null} persistor={persistor}>
+        <SafeAreaView style={styles.safeArea}>
+          <RootStack />
+        </SafeAreaView>
+      </PersistGate>
     </Provider>
   );
 };
