@@ -68,7 +68,7 @@ const Login: FC<Props> = ({navigation}): JSX.Element => {
           mode={'contained'}
           style={styles.button}
           onPress={handleSubmit(onClickSubmit)}>
-          OK
+          Login
         </Button>
       </Card>
     </ScrollView>
@@ -93,12 +93,12 @@ const styles = StyleSheet.create({
   },
   otpText: {
     marginHorizontal: 30,
-    color: '#BC8F8F',
+    color: '#355E3B',
   },
   button: {
     alignSelf: 'flex-end',
     marginVertical: 20,
     marginRight: 25,
-    backgroundColor: '#F08080',
+    backgroundColor: '#355E3B',
   },
 });
