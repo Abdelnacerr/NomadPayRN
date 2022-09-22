@@ -21,6 +21,8 @@ function RootStack() {
           headerShown: true,
           headerTitleAlign: 'center',
           headerBackVisible: true,
+          headerBackTitleVisible: false,
+          animation: 'slide_from_right',
           headerStyle: {
             backgroundColor: '#F5FFFA',
           },
