@@ -1,4 +1,5 @@
 {
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.showUnused": true
+  "editor.showUnused": true,
+  "java.configuration.updateBuildConfiguration": "automatic"
 }
