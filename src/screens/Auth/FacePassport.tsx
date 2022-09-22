@@ -3,11 +3,16 @@ import {StyleSheet, View} from 'react-native';
 import {Button, Text} from 'react-native-paper';
 import {Linking} from 'react-native';
 import {RootStackNavProps} from '../../models/rootStackParamList';
+import Camera from 'react-native-vector-icons/Feather';
+import Uplaod from 'react-native-vector-icons/Entypo';
+
 interface FacePassportProps {}
 
 type Props = RootStackNavProps<'FacePassport'> & FacePassportProps;
 
 const FacePassport: FC<Props> = ({navigation}): JSX.Element => {
+  const CameraIcon = () => <Camera name="camera" size={24} color="white" />;
+  const UploadIcon = () => <Uplaod name="upload" size={24} color="white" />;
   return (
     <View style={styles.container}>
       <Text variant="headlineLarge" style={styles.buttonText}>
@@ -21,9 +26,9 @@ const FacePassport: FC<Props> = ({navigation}): JSX.Element => {
           mode="contained"
           buttonColor="#454B1B"
           textColor="#FFFFFF"
+          icon={CameraIcon}
           onPress={() => {
             navigation.navigate('VisionCamera');
-            console.log('navigation', navigation);
           }}>
           Camera
         </Button>
@@ -31,6 +36,7 @@ const FacePassport: FC<Props> = ({navigation}): JSX.Element => {
           mode="contained"
           buttonColor="#454B1B"
           textColor="#FFFFFF"
+          icon={UploadIcon}
           onPress={() => console.log('Pressed')}>
           Upload ID
         </Button>

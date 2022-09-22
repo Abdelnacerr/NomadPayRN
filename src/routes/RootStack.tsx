@@ -18,38 +18,25 @@ function RootStack() {
       <Stack.Navigator
         initialRouteName={'Login'}
         screenOptions={{
-          headerShown: false,
+          headerShown: true,
+          headerTitleAlign: 'center',
+          headerBackVisible: true,
+          headerStyle: {
+            backgroundColor: '#F5FFFA',
+          },
         }}>
         {!isLoggedIn && token === '' ? (
           <Stack.Screen name="Login" component={Login} />
         ) : (
           <>
             <Stack.Screen
-              options={{
-                headerTitle: 'NomadPay',
-                headerShown: true,
-                gestureEnabled: false,
-                headerLeft: () => null,
-                headerBackVisible: false,
-                headerStyle: {
-                  backgroundColor: '#F5FFFA',
-                },
-              }}
+              options={{headerTitle: 'NomadPay'}}
               name="HomeScreen"
               component={HomeScreen}
             />
             <Stack.Screen
               name="VisionCamera"
-              options={{
-                headerTitle: 'VisionCamera',
-                headerShown: false,
-                gestureEnabled: false,
-                headerLeft: () => null,
-                headerBackVisible: false,
-                headerStyle: {
-                  backgroundColor: '#F5FFFA',
-                },
-              }}
+              options={{headerTitle: 'VisionCamera'}}
               component={VisionCamera}
             />
           </>
