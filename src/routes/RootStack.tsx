@@ -6,6 +6,7 @@ import {useAppSelector} from '../RTK/store/reduxHooks';
 
 import Login from '../screens/Auth/Login';
 import HomeScreen from '../screens/HomeScreen';
+import VisionCamera from '../components/VisionCamera';
 
 function RootStack() {
   const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -36,6 +37,20 @@ function RootStack() {
               }}
               name="HomeScreen"
               component={HomeScreen}
+            />
+            <Stack.Screen
+              name="VisionCamera"
+              options={{
+                headerTitle: 'VisionCamera',
+                headerShown: false,
+                gestureEnabled: false,
+                headerLeft: () => null,
+                headerBackVisible: false,
+                headerStyle: {
+                  backgroundColor: '#F5FFFA',
+                },
+              }}
+              component={VisionCamera}
             />
           </>
         )}

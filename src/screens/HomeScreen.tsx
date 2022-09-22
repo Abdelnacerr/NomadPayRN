@@ -1,7 +1,7 @@
-import React, {FC, useEffect, useRef} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
-import BottomSheetBehavior from 'reanimated-bottom-sheet';
-import BottomSheet from 'reanimated-bottom-sheet';
+import {useNavigation} from '@react-navigation/native';
+import RNPModal from '../components/Modal';
 import {RootStackNavProps} from '../models/rootStackParamList';
 import FacePassport from './Auth/FacePassport';
 
@@ -9,22 +9,25 @@ interface HomeScreenProps {}
 
 type Props = RootStackNavProps<'HomeScreen'> & HomeScreenProps;
 
-const HomeScreen: FC<Props> = ({navigation}): JSX.Element => {
-  const sheetRef = useRef<BottomSheetBehavior>(null);
+const HomeScreen: FC<Props> = (): JSX.Element => {
+  const [visible, setVisible] = useState<boolean>(false);
+  const navigation = useNavigation();
+
+  const hideModal = () => setVisible(false);
 
   useEffect(() => {
-    sheetRef.current?.snapTo(0);
+    setVisible(true);
   }, []);
 
   return (
     <>
-      <View style={styles.container}></View>
-      <BottomSheet
-        ref={sheetRef}
-        snapPoints={['40%', 300, 0]}
-        borderRadius={16}
-        renderContent={FacePassport}
-      />
+      <View style={styles.container}>
+        <RNPModal
+          children={<FacePassport navigation={navigation as any} />}
+          visible={visible}
+          hideModal={hideModal}
+        />
+      </View>
     </>
   );
 };

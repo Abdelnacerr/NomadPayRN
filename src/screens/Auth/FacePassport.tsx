@@ -1,9 +1,13 @@
+import React, {FC} from 'react';
 import {StyleSheet, View} from 'react-native';
-import React from 'react';
 import {Button, Text} from 'react-native-paper';
 import {Linking} from 'react-native';
+import {RootStackNavProps} from '../../models/rootStackParamList';
+interface FacePassportProps {}
 
-const FacePassport = () => {
+type Props = RootStackNavProps<'FacePassport'> & FacePassportProps;
+
+const FacePassport: FC<Props> = ({navigation}): JSX.Element => {
   return (
     <View style={styles.container}>
       <Text variant="headlineLarge" style={styles.buttonText}>
@@ -15,24 +19,26 @@ const FacePassport = () => {
       <View style={styles.buttonContainer}>
         <Button
           mode="contained"
-          buttonColor="#FFFFFF"
-          textColor="#212121"
-          onPress={() => console.log('Pressed')}>
-          Open Camera
+          buttonColor="#454B1B"
+          textColor="#FFFFFF"
+          onPress={() => {
+            navigation.navigate('VisionCamera');
+            console.log('navigation', navigation);
+          }}>
+          Camera
         </Button>
         <Button
           mode="contained"
-          buttonColor="#FFFFFF"
-          textColor="#212121"
+          buttonColor="#454B1B"
+          textColor="#FFFFFF"
           onPress={() => console.log('Pressed')}>
-          Upload Passport
+          Upload ID
         </Button>
       </View>
       <View
         style={{
           flex: 1,
           justifyContent: 'flex-end',
-          bottom: '15%',
         }}>
         <Text variant="bodyMedium" style={styles.buttonText}>
           If this is not your first time logging in to this app, let us know{' '}
@@ -51,20 +57,21 @@ export default FacePassport;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#212121',
     padding: 16,
-    height: '100%',
-    justifyContent: 'flex-start',
+    paddingTop: 0,
+    height: '80%',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   buttonContainer: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
     width: '100%',
-    marginVertical: 50,
+    marginTop: 40,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: '#212121',
   },
 });
