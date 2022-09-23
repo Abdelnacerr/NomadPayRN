@@ -1,9 +1,10 @@
-import React, {FC, useCallback, useEffect, useRef} from 'react';
-import {Linking, StyleSheet, View} from 'react-native';
+import React, {FC, useCallback, useEffect, useRef, useState} from 'react';
+import {Image, Linking, StyleSheet, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
-import {Camera, useCameraDevices} from 'react-native-vision-camera';
+import {Camera, PhotoFile, useCameraDevices} from 'react-native-vision-camera';
 import {RootStackNavProps} from '../models/rootStackParamList';
 import Cameraicon from 'react-native-vector-icons/Feather';
+
 interface VisionCameraProps {}
 
 type Props = RootStackNavProps<'VisionCamera'> & VisionCameraProps;
@@ -13,6 +14,15 @@ const VisionCamera: FC<Props> = (): JSX.Element => {
   const device = devices.front;
   const cameraRef = useRef<Camera>(null);
   const PhotoIcon = () => <Cameraicon name="camera" size={36} color="white" />;
+  const [photo, setPhoto] = useState<PhotoFile>();
+  const photoPath = `file://${photo?.path}`;
+  const photoName = photoPath.split('/').pop()!;
+  const photoType = 'image/jpg';
+  const file = {
+    uri: photoPath,
+    name: photoName,
+    type: photoType,
+  };
 
   const requestCameraPermission = useCallback(async () => {
     const permissions = await Camera.requestCameraPermission();
@@ -22,6 +32,20 @@ const VisionCamera: FC<Props> = (): JSX.Element => {
   useEffect(() => {
     requestCameraPermission();
   }, []);
+
+  const capturePhoto = useCallback(async () => {
+    try {
+      if (cameraRef.current) {
+        const photo = await cameraRef.current.takePhoto();
+        if (photo) {
+          setPhoto(photo);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
 
   if (device == null) return <></>;
 
@@ -38,14 +62,12 @@ const VisionCamera: FC<Props> = (): JSX.Element => {
         accessible={true}
         format={device.formats[0]}
       />
+      <Image style={styles.image} source={{uri: photoPath}} />
       <View style={styles.container}>
         <IconButton
           style={styles.icon}
           icon={PhotoIcon}
-          onPress={() => {
-            cameraRef.current?.takePhoto();
-            console.log('photo taken');
-          }}
+          onPress={() => capturePhoto()}
         />
       </View>
     </>
@@ -70,5 +92,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#454B1B',
+  },
+  image: {
+    width: 66,
+    height: 60,
   },
 });
