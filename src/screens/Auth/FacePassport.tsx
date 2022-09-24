@@ -13,6 +13,11 @@ type Props = RootStackNavProps<'FacePassport'> & FacePassportProps;
 const FacePassport: FC<Props> = ({navigation}): JSX.Element => {
   const CameraIcon = () => <Camera name="camera" size={24} color="white" />;
   const UploadIcon = () => <Uplaod name="upload" size={24} color="white" />;
+
+  const handleSubmit = async () => {
+    navigation.navigate('VisionCamera');
+  };
+
   return (
     <View style={styles.container}>
       <Text variant="headlineLarge" style={styles.buttonText}>
@@ -28,7 +33,7 @@ const FacePassport: FC<Props> = ({navigation}): JSX.Element => {
           textColor="#FFFFFF"
           icon={CameraIcon}
           onPress={() => {
-            navigation.navigate('VisionCamera');
+            handleSubmit();
           }}>
           Camera
         </Button>

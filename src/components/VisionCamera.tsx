@@ -4,12 +4,13 @@ import {IconButton} from 'react-native-paper';
 import {Camera, PhotoFile, useCameraDevices} from 'react-native-vision-camera';
 import {RootStackNavProps} from '../models/rootStackParamList';
 import Cameraicon from 'react-native-vector-icons/Feather';
+import {useGetS3UrlQuery} from '../RTK/services/getS3Url';
 
 interface VisionCameraProps {}
 
 type Props = RootStackNavProps<'VisionCamera'> & VisionCameraProps;
 
-const VisionCamera: FC<Props> = (): JSX.Element => {
+const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
   const devices = useCameraDevices();
   const device = devices.front;
   const cameraRef = useRef<Camera>(null);
@@ -18,11 +19,6 @@ const VisionCamera: FC<Props> = (): JSX.Element => {
   const photoPath = `file://${photo?.path}`;
   const photoName = photoPath.split('/').pop()!;
   const photoType = 'image/jpg';
-  const file = {
-    uri: photoPath,
-    name: photoName,
-    type: photoType,
-  };
 
   const requestCameraPermission = useCallback(async () => {
     const permissions = await Camera.requestCameraPermission();
@@ -42,10 +38,13 @@ const VisionCamera: FC<Props> = (): JSX.Element => {
         }
       }
     } catch (error) {
-      console.log(error);
+      error;
     }
   }, []);
 
+  if (photoName!!) {
+    const {data} = useGetS3UrlQuery(photoName);
+  }
 
   if (device == null) return <></>;
 
