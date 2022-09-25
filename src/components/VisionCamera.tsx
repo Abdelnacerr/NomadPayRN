@@ -5,12 +5,14 @@ import {Camera, PhotoFile, useCameraDevices} from 'react-native-vision-camera';
 import {RootStackNavProps} from '../models/rootStackParamList';
 import Cameraicon from 'react-native-vector-icons/Feather';
 import {useGetS3UrlQuery} from '../RTK/services/getS3Url';
+import {useIndexFacesMutation} from '../RTK/services/indexFaces';
 
 interface VisionCameraProps {}
 
 type Props = RootStackNavProps<'VisionCamera'> & VisionCameraProps;
 
 const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
+  const [indexFaces] = useIndexFacesMutation();
   const devices = useCameraDevices();
   const device = devices.front;
   const cameraRef = useRef<Camera>(null);
@@ -42,9 +44,39 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
     }
   }, []);
 
-  if (photoName!!) {
-    const {data} = useGetS3UrlQuery(photoName);
-  }
+  const handleFileUpload = async () => {
+    if (photoName) {
+      const {data: url} = useGetS3UrlQuery(photoName);
+
+      if (url) {
+        fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          body: photoPath,
+        });
+
+        const imageUrl = url.split('?')[0];
+        console.log(imageUrl);
+      }
+    }
+  };
+
+  const handleIndexFaces = async () => {
+    try {
+      await indexFaces({
+        Bucket: 'bucketName',
+        Name: 'photo.jpeg',
+      })
+        .unwrap()
+        .then(res => {
+          console.log(res);
+        });
+    } catch (error) {
+      error;
+    }
+  };
 
   if (device == null) return <></>;
 
@@ -66,7 +98,10 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
         <IconButton
           style={styles.icon}
           icon={PhotoIcon}
-          onPress={() => capturePhoto()}
+          onPress={() => {
+            capturePhoto();
+            handleIndexFaces();
+          }}
         />
       </View>
     </>
