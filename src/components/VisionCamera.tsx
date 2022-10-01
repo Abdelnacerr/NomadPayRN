@@ -4,7 +4,7 @@ import {IconButton} from 'react-native-paper';
 import {Camera, PhotoFile, useCameraDevices} from 'react-native-vision-camera';
 import {RootStackNavProps} from '../models/rootStackParamList';
 import Cameraicon from 'react-native-vector-icons/Feather';
-import {useGetS3UrlQuery} from '../RTK/services/getS3Url';
+import {useS3UrlMutation} from '../RTK/services/getS3Url';
 import {useIndexFacesMutation} from '../RTK/services/indexFaces';
 
 interface VisionCameraProps {}
@@ -13,6 +13,7 @@ type Props = RootStackNavProps<'VisionCamera'> & VisionCameraProps;
 
 const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
   const [indexFaces] = useIndexFacesMutation();
+  const [s3Url] = useS3UrlMutation();
   const devices = useCameraDevices();
   const device = devices.front;
   const cameraRef = useRef<Camera>(null);
@@ -20,7 +21,6 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
   const [photo, setPhoto] = useState<PhotoFile>();
   const photoPath = `file://${photo?.path}`;
   const photoName = photoPath.split('/').pop()!;
-  const photoType = 'image/jpg';
 
   const requestCameraPermission = useCallback(async () => {
     const permissions = await Camera.requestCameraPermission();
@@ -46,20 +46,23 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
 
   const handleFileUpload = async () => {
     if (photoName) {
-      const {data: url} = useGetS3UrlQuery(photoName);
-
-      if (url) {
-        fetch(url, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-          body: photoPath,
+      const url = s3Url(photoName)
+        .unwrap()
+        .then((res: {url: string}) => {
+          return res.url;
         });
+      console.log(url);
 
-        const imageUrl = url.split('?')[0];
-        console.log(imageUrl);
-      }
+      fetch(await url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        body: photoPath,
+      });
+
+      const images3Url = (await url).split('?')[0];
+      console.log(images3Url);
     }
   };
 
@@ -98,10 +101,7 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
         <IconButton
           style={styles.icon}
           icon={PhotoIcon}
-          onPress={() => {
-            capturePhoto();
-            handleIndexFaces();
-          }}
+          onPress={capturePhoto}
         />
       </View>
     </>

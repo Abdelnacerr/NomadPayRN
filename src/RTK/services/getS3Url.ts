@@ -1,6 +1,9 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 import {apiEndPoint} from '../../settings/endpoints';
 
+interface s3UrlResponse {
+  url: string;
+}
 export const s3UrlApiSlice = createApi({
   reducerPath: 's3UrlApi',
   baseQuery: fetchBaseQuery({
@@ -12,11 +15,15 @@ export const s3UrlApiSlice = createApi({
   }),
   tagTypes: ['s3Url'],
   endpoints: builder => ({
-    getS3Url: builder.query<any, string | void>({
-      query: fileName => `/getS3Url/${fileName}`,
-      providesTags: [{type: 's3Url', id: 's3UrlList'}],
+    s3Url: builder.mutation<s3UrlResponse, string>({
+      query: fileName => ({
+        url: '/getS3Url',
+        method: 'PUT',
+        body: fileName,
+      }),
+      invalidatesTags: ['s3Url'],
     }),
   }),
 });
 
-export const {useGetS3UrlQuery} = s3UrlApiSlice;
+export const {useS3UrlMutation} = s3UrlApiSlice;
