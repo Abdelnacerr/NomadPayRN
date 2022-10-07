@@ -15,15 +15,13 @@ export const s3UrlApiSlice = createApi({
   }),
   tagTypes: ['s3Url'],
   endpoints: builder => ({
-    s3Url: builder.mutation<s3UrlResponse, string>({
-      query: fileName => ({
-        url: '/getS3Url',
-        method: 'PUT',
-        body: fileName,
-      }),
-      invalidatesTags: ['s3Url'],
+    getS3Url: builder.query<string, string>({
+      query: fileName => {
+        return `/getS3Url/${fileName}`;
+      },
+      providesTags: [{type: 's3Url', id: 's3UrlList'}],
     }),
   }),
 });
 
-export const {useS3UrlMutation} = s3UrlApiSlice;
+export const {useGetS3UrlQuery} = s3UrlApiSlice;

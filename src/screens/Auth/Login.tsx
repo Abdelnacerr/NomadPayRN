@@ -27,7 +27,7 @@ interface LoginProps {}
 type Props = RootStackNavProps<'Login'> & LoginProps;
 
 const Login: FC<Props> = ({navigation}): JSX.Element => {
-  const [login] = useLoginMutation();
+  const [login, {isSuccess: isLoginSuccess}] = useLoginMutation();
   const phoneInputRef = useRef<PhoneInput>(null);
   const dispatch = useAppDispatch();
   const {control, handleSubmit, setError} = useForm<FieldValues>({
@@ -46,7 +46,7 @@ const Login: FC<Props> = ({navigation}): JSX.Element => {
         dispatch(setTokenAsync(res.jwt));
       });
     dispatch(setisLoggedInAsync(true));
-    navigation.navigate('HomeScreen');
+    isLoginSuccess && navigation.navigate('HomeScreen');
   };
 
   return (

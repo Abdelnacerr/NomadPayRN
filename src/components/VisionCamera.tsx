@@ -3,24 +3,23 @@ import {Image, Linking, StyleSheet, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
 import {Camera, PhotoFile, useCameraDevices} from 'react-native-vision-camera';
 import {RootStackNavProps} from '../models/rootStackParamList';
-import Cameraicon from 'react-native-vector-icons/Feather';
-import {useS3UrlMutation} from '../RTK/services/getS3Url';
+import CameraIcon from 'react-native-vector-icons/Feather';
+import {useGetS3UrlQuery} from '../RTK/services/getS3Url';
 import {useIndexFacesMutation} from '../RTK/services/indexFaces';
-
 interface VisionCameraProps {}
 
 type Props = RootStackNavProps<'VisionCamera'> & VisionCameraProps;
 
 const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
   const [indexFaces] = useIndexFacesMutation();
-  const [s3Url] = useS3UrlMutation();
   const devices = useCameraDevices();
   const device = devices.front;
   const cameraRef = useRef<Camera>(null);
-  const PhotoIcon = () => <Cameraicon name="camera" size={36} color="white" />;
+  const PhotoIcon = () => <CameraIcon name="camera" size={36} color="white" />;
   const [photo, setPhoto] = useState<PhotoFile>();
   const photoPath = `file://${photo?.path}`;
   const photoName = photoPath.split('/').pop()!;
+  // console.log('bucket: ', Bucket);
 
   const requestCameraPermission = useCallback(async () => {
     const permissions = await Camera.requestCameraPermission();
@@ -31,55 +30,55 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
     requestCameraPermission();
   }, []);
 
-  const capturePhoto = useCallback(async () => {
-    try {
-      if (cameraRef.current) {
-        const photo = await cameraRef.current.takePhoto();
-        if (photo) {
-          setPhoto(photo);
-        }
-      }
-    } catch (error) {
-      error;
-    }
-  }, []);
+  const {data: signedUrl} = useGetS3UrlQuery(photoName);
+  console.log('photoName', photoName);
+  console.log('url:', signedUrl);
 
   const handleFileUpload = async () => {
-    if (photoName) {
-      const url = s3Url(photoName)
-        .unwrap()
-        .then((res: {url: string}) => {
-          return res.url;
-        });
-      console.log(url);
-
-      fetch(await url, {
+    if (signedUrl && photo) {
+      const response = await fetch(signedUrl, {
         method: 'PUT',
         headers: {
           'Content-Type': 'multipart/form-data',
         },
         body: photoPath,
       });
-
-      const images3Url = (await url).split('?')[0];
-      console.log(images3Url);
+      if (response.status === 200) {
+        console.log('file uploaded');
+      }
+    } else {
+      console.log('No file to upload');
     }
   };
 
   const handleIndexFaces = async () => {
+    await handleFileUpload();
     try {
-      await indexFaces({
-        Bucket: 'bucketName',
-        Name: 'photo.jpeg',
+      indexFaces({
+        Bucket: '',
+        Name: photoName,
       })
         .unwrap()
         .then(res => {
-          console.log(res);
+          console.log('res', res);
         });
     } catch (error) {
       error;
     }
   };
+
+  const handleSubmit = useCallback(async () => {
+    try {
+      if (cameraRef.current) {
+        const photo = await cameraRef.current.takePhoto({});
+        setPhoto(photo);
+        handleFileUpload();
+        handleIndexFaces();
+      }
+    } catch (error) {
+      error;
+    }
+  }, [photoName, signedUrl]);
 
   if (device == null) return <></>;
 
@@ -101,7 +100,7 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
         <IconButton
           style={styles.icon}
           icon={PhotoIcon}
-          onPress={capturePhoto}
+          onPress={handleSubmit}
         />
       </View>
     </>
