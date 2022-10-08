@@ -135,7 +135,7 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
         />
       </View>
       {showNotiView && <NotiView uri={photoPath} label={NotiViewLabel} />}
-      {!isLoading && !isFaceSearchLoading && <LoadingIndicator />}
+      {isLoading && isFaceSearchLoading && <LoadingIndicator />}
     </>
   );
 };
