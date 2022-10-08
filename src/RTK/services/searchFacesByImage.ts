@@ -1,4 +1,5 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
+import { SearchFacesByImageResponse } from '../../models/searchFacesByImageResponse'
 import {apiEndPoint} from '../../settings/endpoints';
 
 type s3Object = {
@@ -17,7 +18,7 @@ export const searchFacesByImageApiSlice = createApi({
   }),
   tagTypes: ['searchFacesByImage'],
   endpoints: builder => ({
-    searchFacesByImage: builder.mutation<any, s3Object>({
+    searchFacesByImage: builder.mutation<SearchFacesByImageResponse, s3Object>({
       query: s3Object => ({
         url: '/searchFacesByImage',
         method: 'POST',

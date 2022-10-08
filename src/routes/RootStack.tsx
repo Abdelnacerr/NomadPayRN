@@ -6,7 +6,7 @@ import {useAppSelector} from '../RTK/store/reduxHooks';
 
 import Login from '../screens/Auth/Login';
 import HomeScreen from '../screens/HomeScreen';
-import VisionCamera from '../components/VisionCamera';
+import VisionCamera from '../screens/VisionCamera';
 
 function RootStack() {
   const Stack = createNativeStackNavigator<RootStackParamList>();

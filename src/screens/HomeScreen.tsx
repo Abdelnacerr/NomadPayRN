@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import RNPModal from '../components/Modal';
@@ -10,14 +10,11 @@ interface HomeScreenProps {}
 type Props = RootStackNavProps<'HomeScreen'> & HomeScreenProps;
 
 const HomeScreen: FC<Props> = (): JSX.Element => {
-  const [visible, setVisible] = useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(true);
   const navigation = useNavigation();
 
   const hideModal = () => setVisible(false);
-
-  useEffect(() => {
-    setVisible(true);
-  }, []);
+  const showModal = () => setVisible(true);
 
   return (
     <>
@@ -26,6 +23,7 @@ const HomeScreen: FC<Props> = (): JSX.Element => {
           children={<FacePassport navigation={navigation as any} />}
           visible={visible}
           hideModal={hideModal}
+          showModal={showModal}
         />
       </View>
     </>

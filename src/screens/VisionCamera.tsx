@@ -1,17 +1,25 @@
 import React, {FC, useCallback, useEffect, useRef, useState} from 'react';
-import {Image, Linking, StyleSheet, View} from 'react-native';
+import {Linking, StyleSheet, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
 import {Camera, PhotoFile, useCameraDevices} from 'react-native-vision-camera';
 import {RootStackNavProps} from '../models/rootStackParamList';
 import CameraIcon from 'react-native-vector-icons/Feather';
 import {useGetS3UrlQuery} from '../RTK/services/getS3Url';
 import {useIndexFacesMutation} from '../RTK/services/indexFaces';
+import {useSearchFacesByImageMutation} from '../RTK/services/searchFacesByImage';
+import NotiView from '../components/NotiView';
+import LoadingIndicator from '../components/LoadingIndicator';
 interface VisionCameraProps {}
 
 type Props = RootStackNavProps<'VisionCamera'> & VisionCameraProps;
 
 const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
-  const [indexFaces] = useIndexFacesMutation();
+  const [indexFaces, {isSuccess: isIndexingSuccess, isLoading}] =
+    useIndexFacesMutation();
+  const [
+    searchFacesByImage,
+    {isSuccess: isFaceSearchSuccess, isLoading: isFaceSearchLoading},
+  ] = useSearchFacesByImageMutation();
   const devices = useCameraDevices();
   const device = devices.front;
   const cameraRef = useRef<Camera>(null);
@@ -19,7 +27,8 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
   const [photo, setPhoto] = useState<PhotoFile>();
   const photoPath = `file://${photo?.path}`;
   const photoName = photoPath.split('/').pop()!;
-  // console.log('bucket: ', Bucket);
+  const [showNotiView, setShowNotiView] = useState(false);
+  const [NotiViewLabel, setNotiViewLabel] = useState<string>();
 
   const requestCameraPermission = useCallback(async () => {
     const permissions = await Camera.requestCameraPermission();
@@ -30,9 +39,7 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
     requestCameraPermission();
   }, []);
 
-  const {data: signedUrl} = useGetS3UrlQuery(photoName);
-  console.log('photoName', photoName);
-  console.log('url:', signedUrl);
+  const {data: signedUrl} = useGetS3UrlQuery(photoName, {});
 
   const handleFileUpload = async () => {
     if (signedUrl && photo) {
@@ -43,11 +50,12 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
         },
         body: photoPath,
       });
-      if (response.status === 200) {
-        console.log('file uploaded');
+      if (response.status === 200 && isIndexingSuccess) {
+        setShowNotiView(showNotiView => !showNotiView);
+        setNotiViewLabel('Image uploaded to s3');
       }
     } else {
-      console.log('No file to upload');
+      setNotiViewLabel('File not uploaded');
     }
   };
 
@@ -60,8 +68,26 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
       })
         .unwrap()
         .then(res => {
-          console.log('res', res);
+          setNotiViewLabel('Image indexed');
         });
+    } catch (error) {
+      error;
+    }
+  };
+
+  const searchFaceByImage = async () => {
+    await handleIndexFaces();
+    try {
+      searchFacesByImage({
+        Bucket: 'testnpusersbucket',
+        Name: photoName,
+      }).then(res => {
+        if (res && isFaceSearchSuccess) {
+          setNotiViewLabel('Face Matched successfully');
+        } else {
+          setNotiViewLabel('No Face Matches exist!');
+        }
+      });
     } catch (error) {
       error;
     }
@@ -70,10 +96,16 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
   const handleSubmit = useCallback(async () => {
     try {
       if (cameraRef.current) {
-        const photo = await cameraRef.current.takePhoto({});
+        const photo = await cameraRef.current.takePhoto({
+          enableAutoDistortionCorrection: true,
+          enableAutoRedEyeReduction: true,
+          enableAutoStabilization: true,
+        });
+
         setPhoto(photo);
-        handleFileUpload();
-        handleIndexFaces();
+        await handleFileUpload();
+        await handleIndexFaces();
+        await searchFaceByImage();
       }
     } catch (error) {
       error;
@@ -95,7 +127,6 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
         accessible={true}
         format={device.formats[0]}
       />
-      <Image style={styles.image} source={{uri: photoPath}} />
       <View style={styles.container}>
         <IconButton
           style={styles.icon}
@@ -103,6 +134,8 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
           onPress={handleSubmit}
         />
       </View>
+      {showNotiView && <NotiView uri={photoPath} label={NotiViewLabel} />}
+      {!isLoading && !isFaceSearchLoading && <LoadingIndicator />}
     </>
   );
 };
@@ -125,9 +158,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#454B1B',
-  },
-  image: {
-    width: 66,
-    height: 60,
   },
 });

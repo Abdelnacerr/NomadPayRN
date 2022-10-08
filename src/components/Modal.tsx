@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {FC} from 'react';
 import {StyleSheet} from 'react-native';
 import {Modal, Portal, Button, Provider} from 'react-native-paper';
 
@@ -7,9 +7,14 @@ interface Props {
   visible: boolean;
   dismissable?: boolean;
   hideModal: () => void;
+  showModal: () => void;
 }
 
-const RNPModal: FC<Props> = ({children, visible, hideModal}) => {
+const RNPModal: FC<Props> = ({children, visible, hideModal, showModal}) => {
+  if (visible) {
+    showModal();
+  }
+
   return (
     <Provider>
       <Portal>
