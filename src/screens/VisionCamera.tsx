@@ -108,7 +108,9 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
         await handleFileUpload();
         await handleIndexFaces();
         await searchFaceByImage();
-        navigation.navigate('Dummy');
+        setTimeout(() => {
+          navigation.navigate('Dummy');
+        }, 3000);
       }
     } catch (error) {
       error;
