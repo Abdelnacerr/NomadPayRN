@@ -39,7 +39,9 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
     requestCameraPermission();
   }, []);
 
-  const {data: signedUrl} = useGetS3UrlQuery(photoName, {});
+  const {data: signedUrl} = useGetS3UrlQuery(photoName, {
+    // skip: photoName === undefined,
+  });
 
   const handleFileUpload = async () => {
     if (signedUrl && photo) {
@@ -50,7 +52,7 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
         },
         body: photoPath,
       });
-      if (response.status === 200 && isIndexingSuccess) {
+      if (response.status === 200) {
         setShowNotiView(showNotiView => !showNotiView);
         setNotiViewLabel('Image uploaded to s3');
       }
@@ -82,7 +84,7 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
         Bucket: 'testnpusersbucket',
         Name: photoName,
       }).then(res => {
-        if (res && isFaceSearchSuccess) {
+        if (res) {
           setNotiViewLabel('Face Matched successfully');
         } else {
           setNotiViewLabel('No Face Matches exist!');
