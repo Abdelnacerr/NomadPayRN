@@ -42,7 +42,7 @@ const FacePassport: FC<Props> = ({navigation}): JSX.Element => {
           buttonColor="#454B1B"
           textColor="#FFFFFF"
           icon={UploadIcon}
-          onPress={() => console.log('Pressed')}>
+          onPress={() => navigation.navigate('Dummy')}>
           Upload ID
         </Button>
       </View>

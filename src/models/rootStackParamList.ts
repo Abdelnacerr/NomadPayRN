@@ -6,6 +6,7 @@ export type RootStackParamList = {
   BottomSheet: undefined;
   FacePassport: undefined;
   VisionCamera: undefined;
+  Dummy: undefined;
 };
 
 export type RootStackNavProps<T extends keyof RootStackParamList> = {
