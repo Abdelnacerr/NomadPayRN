@@ -7,7 +7,6 @@ import CameraIcon from 'react-native-vector-icons/Feather';
 import {useGetS3UrlQuery} from '../RTK/services/getS3Url';
 import {useIndexFacesMutation} from '../RTK/services/indexFaces';
 import {useSearchFacesByImageMutation} from '../RTK/services/searchFacesByImage';
-import NotiView from '../components/NotiView';
 import LoadingIndicator from '../components/LoadingIndicator';
 interface VisionCameraProps {}
 
@@ -27,8 +26,6 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
   const [photo, setPhoto] = useState<PhotoFile>();
   const photoPath = `file://${photo?.path}`;
   const photoName = photoPath.split('/').pop()!;
-  const [showNotiView, setShowNotiView] = useState(false);
-  const [NotiViewLabel, setNotiViewLabel] = useState<string>();
 
   const requestCameraPermission = useCallback(async () => {
     const permissions = await Camera.requestCameraPermission();
@@ -53,11 +50,10 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
         body: photoPath,
       });
       if (response.status === 200) {
-        setShowNotiView(showNotiView => !showNotiView);
-        setNotiViewLabel('Image uploaded to s3');
+        console.log('Image uploaded to s3');
       }
     } else {
-      setNotiViewLabel('File not uploaded');
+      console.log('File not uploaded');
     }
   };
 
@@ -70,7 +66,7 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
       })
         .unwrap()
         .then(res => {
-          setNotiViewLabel('Image indexed');
+          console.log('Image indexed');
         });
     } catch (error) {
       error;
@@ -85,9 +81,9 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
         Name: photoName,
       }).then(res => {
         if (res) {
-          setNotiViewLabel('Face Matched successfully');
+          console.log('Face Matched successfully');
         } else {
-          setNotiViewLabel('No Face Matches exist!');
+          console.log('No Face Matches exist!');
         }
       });
     } catch (error) {
@@ -105,9 +101,9 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
         });
 
         setPhoto(photo);
-        await handleFileUpload();
-        await handleIndexFaces();
-        await searchFaceByImage();
+        // await handleFileUpload();
+        // await handleIndexFaces();
+        // await searchFaceByImage();
         setTimeout(() => {
           navigation.navigate('Dummy');
         }, 3000);
@@ -139,7 +135,6 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
           onPress={handleSubmit}
         />
       </View>
-      {showNotiView && <NotiView uri={photoPath} label={NotiViewLabel} />}
       {isLoading && isFaceSearchLoading && <LoadingIndicator />}
     </>
   );

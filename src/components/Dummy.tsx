@@ -8,7 +8,11 @@ type Props = RootStackNavProps<'Dummy'>;
 const Dummy: FC<Props> = (): JSX.Element => {
   return (
     <View style={styles.container}>
-      <Lottie source={require('../assets/lottie/toaster.json')} autoPlay loop />
+      <Lottie
+        source={require('../assets/lottie/facial-recognition.json')}
+        autoPlay
+        loop
+      />
     </View>
   );
 };
