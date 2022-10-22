@@ -46,13 +46,13 @@ const Login: FC<Props> = ({navigation}): JSX.Element => {
         dispatch(setTokenAsync(res.jwt));
       });
     dispatch(setisLoggedInAsync(true));
-    isLoginSuccess && navigation.navigate('HomeScreen');
+    isLoginSuccess && navigation.navigate('Identification');
   };
 
   return (
     <ScrollView
       keyboardShouldPersistTaps="never"
-      contentContainerStyle={{flexGrow: 1, backgroundColor: '#F5FFFA'}}>
+      contentContainerStyle={{flexGrow: 1}}>
       <Text variant="displayLarge" style={styles.textView}>
         Welcome
       </Text>
@@ -93,12 +93,12 @@ const styles = StyleSheet.create({
   },
   otpText: {
     marginHorizontal: 30,
-    color: '#355E3B',
+    color: '#454B1B',
   },
   button: {
     alignSelf: 'flex-end',
     marginVertical: 20,
     marginRight: 25,
-    backgroundColor: '#355E3B',
+    backgroundColor: '#454B1B',
   },
 });

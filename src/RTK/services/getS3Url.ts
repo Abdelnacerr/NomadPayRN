@@ -1,9 +1,6 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 import {apiEndPoint} from '../../settings/endpoints';
 
-interface s3UrlResponse {
-  url: string;
-}
 export const s3UrlApiSlice = createApi({
   reducerPath: 's3UrlApi',
   baseQuery: fetchBaseQuery({

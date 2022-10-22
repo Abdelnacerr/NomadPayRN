@@ -1,8 +1,9 @@
-import { s3UrlApiSlice } from '../services/getS3Url'
+import {s3UrlApiSlice} from '../services/getS3Url';
 import {usersApiSlice} from '../services/getUsers';
-import { indexFacesApiSlice } from '../services/indexFaces'
+import {indexFacesApiSlice} from '../services/indexFaces';
 import {loginApiSlice} from '../services/login';
-import { searchFacesByImageApiSlice } from '../services/searchFacesByImage'
+import {searchFacesByImageApiSlice} from '../services/searchFacesByImage';
+import {accountTypeApiSlice} from '../services/getAccountTypes';
 
 export const middlewareArray = [
   loginApiSlice.middleware,
@@ -10,4 +11,5 @@ export const middlewareArray = [
   s3UrlApiSlice.middleware,
   indexFacesApiSlice.middleware,
   searchFacesByImageApiSlice.middleware,
+  accountTypeApiSlice.middleware,
 ];

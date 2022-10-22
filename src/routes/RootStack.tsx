@@ -5,9 +5,9 @@ import {RootStackParamList} from '../models/rootStackParamList';
 import {useAppSelector} from '../RTK/store/reduxHooks';
 
 import Login from '../screens/Auth/Login';
-import HomeScreen from '../screens/HomeScreen';
+import HomeScreen from '../screens/Identification';
 import VisionCamera from '../screens/VisionCamera';
-import Dummy from '../components/Dummy';
+import UserType from '../screens/UserType';
 
 function RootStack() {
   const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -17,21 +17,29 @@ function RootStack() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={'Login'}
+        initialRouteName={'UserType'}
         screenOptions={{
           headerShown: true,
           headerTitleAlign: 'center',
           headerBackVisible: true,
           headerBackTitleVisible: false,
           animation: 'slide_from_right',
+          contentStyle: {
+            backgroundColor: '#F5FFFA',
+          },
           headerStyle: {
             backgroundColor: '#F5FFFA',
           },
         }}>
         {!isLoggedIn && token === '' ? (
-          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="UserType" component={UserType} />
         ) : (
           <>
+            <Stack.Screen
+              options={{headerTitle: 'User Type'}}
+              name="UserType"
+              component={UserType}
+            />
             <Stack.Screen
               options={{headerTitle: 'NomadPay'}}
               name="HomeScreen"
@@ -41,14 +49,6 @@ function RootStack() {
               name="VisionCamera"
               options={{headerTitle: 'VisionCamera'}}
               component={VisionCamera}
-            />
-            <Stack.Screen
-              name="Dummy"
-              options={{
-                headerTitle: 'Home',
-                headerBackVisible: false,
-              }}
-              component={Dummy}
             />
           </>
         )}

@@ -36,9 +36,7 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
     requestCameraPermission();
   }, []);
 
-  const {data: signedUrl} = useGetS3UrlQuery(photoName, {
-    // skip: photoName === undefined,
-  });
+  const {data: signedUrl} = useGetS3UrlQuery(photoName, {});
 
   const handleFileUpload = async () => {
     if (signedUrl && photo) {
@@ -104,9 +102,6 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
         // await handleFileUpload();
         // await handleIndexFaces();
         // await searchFaceByImage();
-        setTimeout(() => {
-          navigation.navigate('Dummy');
-        }, 3000);
       }
     } catch (error) {
       error;

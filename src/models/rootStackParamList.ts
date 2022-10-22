@@ -2,11 +2,11 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 export type RootStackParamList = {
   Login: undefined;
+  Identification: undefined;
   HomeScreen: undefined;
-  BottomSheet: undefined;
+  UserType: undefined;
   FacePassport: undefined;
   VisionCamera: undefined;
-  Dummy: undefined;
 };
 
 export type RootStackNavProps<T extends keyof RootStackParamList> = {
