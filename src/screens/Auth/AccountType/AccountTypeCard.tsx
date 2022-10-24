@@ -1,74 +1,39 @@
-import * as React from 'react';
-import {View, Dimensions} from 'react-native';
+import React, {FC} from 'react';
 import Lottie from 'lottie-react-native';
-import Carousel from 'react-native-reanimated-carousel';
 import Animated, {
   Extrapolate,
   interpolate,
   useAnimatedStyle,
 } from 'react-native-reanimated';
-import {withAnchorPoint} from '../utils/anchorPoint';
-import {accountLotties} from '../utils/items';
+import {withAnchorPoint} from '../../../utils/anchorPoint';
+import {accountLotties} from '../../../utils/items';
 import {Text} from 'react-native-paper';
-import {useGetaccountTypeQuery} from '../RTK/services/getAccountTypes';
+import {useGetaccountTypeQuery} from '../../../RTK/services/getAccountTypes';
+import {styles} from '../../../components/styles/defaultNPButton';
+import NPButton from '../../../components/NPButton';
+import AccountTypeCardStyles from '../styles/AccountTypeCardStyles';
+import {colors, PAGE_HEIGHT, PAGE_WIDTH} from '../../../utils/config';
+import {RootStackNavProps} from '../../../models/rootStackParamList';
 
-const colors = ['#867EB1', '#FF4D4D', '#040F01'];
-
-const dimensions = Dimensions.get('window');
-const PAGE_WIDTH = dimensions.width;
-const PAGE_HEIGHT = dimensions.height;
-
-function UserType() {
-  const baseOptions = {
-    vertical: false,
-    width: PAGE_WIDTH,
-    height: PAGE_HEIGHT,
-  } as const;
-
-  return (
-    <View style={{flex: 1}}>
-      <Text
-        variant="displayLarge"
-        style={{
-          color: '#454B1B',
-          alignSelf: 'center',
-          marginHorizontal: 14,
-          marginTop: 20,
-        }}>
-        {' '}
-        Select Account Type
-      </Text>
-      <Carousel
-        {...baseOptions}
-        loop
-        withAnimation={{
-          type: 'spring',
-          config: {
-            damping: 13,
-          },
-        }}
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexShrink: 0,
-        }}
-        autoPlayInterval={1500}
-        data={colors}
-        renderItem={({index, animationValue}) => (
-          <Card animationValue={animationValue} key={index} index={index} />
-        )}
-      />
-    </View>
-  );
-}
-
-const Card: React.FC<{
+interface AccountTypeCardProps {
   index: number;
   animationValue: Animated.SharedValue<number>;
-}> = ({index, animationValue}) => {
+}
+type Props = RootStackNavProps<'AccountTypeCard'> & AccountTypeCardProps;
+
+const AccountTypeCard: FC<Props> = ({
+  navigation,
+  index,
+  animationValue,
+}): JSX.Element => {
   const WIDTH = PAGE_WIDTH / 1.5;
   const HEIGHT = PAGE_HEIGHT / 1.5;
+  const {data} = useGetaccountTypeQuery();
+  const accountType = data
+    ?.map(accountType => accountType.type)
+    .map(type => type)
+    .slice(1);
+  const accountTypeId = data?.map(accountType => accountType.id).slice(1);
 
   const cardStyle = useAnimatedStyle(() => {
     const scale = interpolate(
@@ -128,11 +93,6 @@ const Card: React.FC<{
       transform: [{translateX}, {translateY}, {rotateZ: `${rotateZ}deg`}],
     };
   }, [index]);
-  const {data} = useGetaccountTypeQuery();
-  const accountType = data
-    ?.map(accountType => accountType.type)
-    .map(type => type)
-    .filter(type => type !== 'admin');
 
   return (
     <Animated.View
@@ -168,6 +128,19 @@ const Card: React.FC<{
               accountType[index].slice(1)}
           </Text>
         )}
+        {accountTypeId && (
+          <NPButton
+            style={styles.primaryButton}
+            onPress={() => {
+              navigation.navigate('Login', {
+                accountTypeId: accountTypeId[index],
+              });
+            }}>
+            <Text variant="titleLarge" style={styles.primaryButtonText}>
+              Select
+            </Text>
+          </NPButton>
+        )}
       </Animated.View>
       <Lottie
         source={accountLotties[index % 3]}
@@ -176,11 +149,7 @@ const Card: React.FC<{
         style={[
           {
             width: WIDTH * 0.8,
-            borderRadius: 16,
-            justifyContent: 'center',
-            alignItems: 'center',
-            position: 'absolute',
-            zIndex: 999,
+            ...AccountTypeCardStyles.lottie,
           },
           blockStyle,
         ]}
@@ -190,4 +159,4 @@ const Card: React.FC<{
   );
 };
 
-export default UserType;
+export default AccountTypeCard;

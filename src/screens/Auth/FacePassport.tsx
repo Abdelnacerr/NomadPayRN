@@ -10,7 +10,7 @@ interface FacePassportProps {}
 
 type Props = RootStackNavProps<'FacePassport'> & FacePassportProps;
 
-const FacePassport: FC<Props> = ({navigation}): JSX.Element => {
+const FacePassport: FC<Props> = ({navigation, route}): JSX.Element => {
   const CameraIcon = () => <Camera name="camera" size={24} color="white" />;
   const UploadIcon = () => <Uplaod name="upload" size={24} color="white" />;
 

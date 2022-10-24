@@ -102,6 +102,7 @@ const VisionCamera: FC<Props> = ({navigation}): JSX.Element => {
         // await handleFileUpload();
         // await handleIndexFaces();
         // await searchFaceByImage();
+        navigation.navigate('HomeScreen');
       }
     } catch (error) {
       error;

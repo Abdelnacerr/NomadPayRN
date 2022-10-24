@@ -3,7 +3,6 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 export type RootStackParamList = {
   Identification: undefined;
-  HomeScreen: undefined;
   AccountType: undefined;
   AccountTypeCard: undefined;
   Login: {accountTypeId: number};

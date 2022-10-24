@@ -26,7 +26,7 @@ const resolver: Resolver<FieldValues> = async values => {
 interface LoginProps {}
 type Props = RootStackNavProps<'Login'> & LoginProps;
 
-const Login: FC<Props> = ({navigation}): JSX.Element => {
+const Login: FC<Props> = ({navigation, route}): JSX.Element => {
   const [login, {isSuccess: isLoginSuccess}] = useLoginMutation();
   const phoneInputRef = useRef<PhoneInput>(null);
   const dispatch = useAppDispatch();

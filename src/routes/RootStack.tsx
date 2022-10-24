@@ -4,10 +4,11 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../models/rootStackParamList';
 import {useAppSelector} from '../RTK/store/reduxHooks';
 
-import Login from '../screens/Auth/Login';
-import HomeScreen from '../screens/Identification';
+import HomeScreen from '../screens/HomeScreen';
 import VisionCamera from '../screens/VisionCamera';
-import UserType from '../screens/UserType';
+import AccountType from '../screens/Auth/AccountType/AccountType';
+import Login from '../screens/Auth/Login';
+import Identification from '../screens/Identification'
 
 function RootStack() {
   const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -17,7 +18,7 @@ function RootStack() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={'UserType'}
+        initialRouteName={'AccountType'}
         screenOptions={{
           headerShown: true,
           headerTitleAlign: 'center',
@@ -32,14 +33,18 @@ function RootStack() {
           },
         }}>
         {!isLoggedIn && token === '' ? (
-          <Stack.Screen name="UserType" component={UserType} />
+          <>
+            <Stack.Screen name="AccountType" component={AccountType} />
+            <Stack.Screen name="Login" component={Login} />
+          </>
         ) : (
           <>
             <Stack.Screen
-              options={{headerTitle: 'User Type'}}
-              name="UserType"
-              component={UserType}
+              options={{headerTitle: 'Account Type'}}
+              name="AccountType"
+              component={AccountType}
             />
+            <Stack.Screen name="Login" component={Login} />
             <Stack.Screen
               options={{headerTitle: 'NomadPay'}}
               name="HomeScreen"
@@ -49,6 +54,11 @@ function RootStack() {
               name="VisionCamera"
               options={{headerTitle: 'VisionCamera'}}
               component={VisionCamera}
+            />
+            <Stack.Screen
+              name="Identification"
+              options={{headerTitle: 'Identification'}}
+              component={Identification}
             />
           </>
         )}
